@@ -521,9 +521,9 @@ function App() {
 
               {generalProgressionData && (
                 <div className="insights-container" style={{ marginBottom: '2rem' }}>
-                  <div className="insights-header" style={{ justifyContent: 'center' }}>
+                  <div className="collection-header" style={{ justifyContent: 'center', gap: '0.5rem', marginTop: '1rem', borderBottom: 'none', paddingBottom: 0 }}>
                     <Sparkles size={20} color="var(--primary)" />
-                    <h2>GENERAL ACCOUNT PROGRESSION</h2>
+                    <h3 style={{ margin: 0 }}>GENERAL ACCOUNT PROGRESSION</h3>
                     <Sparkles size={20} color="var(--primary)" />
                   </div>
                   <div style={{ textAlign: 'center', marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
@@ -531,29 +531,6 @@ function App() {
                   </div>
                   <div className="upgrade-rec-grid">
                     {generalProgressionData.map((rec: any) => (
-                      <GeneralUpgradeExpandable 
-                        key={rec.rarity} 
-                        rarity={rec.rarity} 
-                        list={rec.list} 
-                        availableWilds={rec.availableWilds} 
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {generalProgressionData && (
-                <div className="insights-container" style={{ marginBottom: '2rem' }}>
-                  <div className="insights-header" style={{ justifyContent: 'center' }}>
-                    <Sparkles size={20} color="var(--primary)" />
-                    <h2>GENERAL ACCOUNT PROGRESSION</h2>
-                    <Sparkles size={20} color="var(--primary)" />
-                  </div>
-                  <div style={{ textAlign: 'center', marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                    Based ONLY on your collection and available Magic Items. Does not consider meta decks.
-                  </div>
-                  <div className="upgrade-rec-grid">
-                    {generalProgressionData.map(rec => (
                       <GeneralUpgradeExpandable 
                         key={rec.rarity} 
                         rarity={rec.rarity} 
