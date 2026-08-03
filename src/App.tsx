@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Search, LayoutDashboard, UserCircle2, Sparkles, Crown, ArrowDownAZ, ArrowUpAZ, Clock, RefreshCw, X as CloseIcon, TrendingUp, ArrowUp, ArrowDown } from 'lucide-react';
 import { getPlayerProfile, getAllCards } from './services/royaleApi';
 import { CardImage } from './components/CardImage';
@@ -60,6 +60,61 @@ export interface MetaDeck {
 
 type SortOption = 'level' | 'elixir' | 'rarity' | 'evo' | 'hero-only' | 'evo-only';
 type SortOrder = 'asc' | 'desc';
+
+const GeneralUpgradeExpandable = ({ rarity, list, availableWilds }: { rarity: string, list: any[], availableWilds: number }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  if (list.length === 0) return null;
+  const featured = list[0];
+  const others = list.slice(1);
+
+  const featuredFeasible = featured.cardsNeeded <= availableWilds;
+  const featuredWildsUsed = featuredFeasible ? featured.cardsNeeded : Math.min(featured.cardsNeeded, availableWilds);
+  const featuredRemainingNeed = featured.cardsNeeded - featuredWildsUsed;
+
+  return (
+    <div className={`recommendation-group ${isExpanded ? 'is-expanded' : ''}`}>
+      <div className={`upgrade-rec-card ${rarity}`} onClick={() => others.length > 0 && setIsExpanded(!isExpanded)} style={{ cursor: others.length > 0 ? 'pointer' : 'default' }}>
+        <div className="rec-header">ALL {rarity.toUpperCase()} ({list.length})</div>
+        <div className="rec-body-mini">
+          <CardImage src={featured.icon} cardName={featured.name} />
+          <div className="rec-mini-info">
+            <div className="name">{featured.name}</div>
+            <div className="meta-stats" style={{ color: featured.cardsNeeded <= 0 ? '#4ade80' : (featuredFeasible ? '#22c55e' : '#94a3b8'), fontWeight: (featuredFeasible || featured.cardsNeeded <= 0) ? 600 : 'normal', display: 'flex', alignItems: 'center', gap: '0.25rem', flexWrap: 'wrap' }}>
+              <span>{featured.cardsNeeded <= 0 ? 'Fully Ready (✓)' : (featuredFeasible ? 'Ready with Wilds (✓)' : `Needs ${featuredRemainingNeed} cards`)}</span>
+              {featuredWildsUsed > 0 && featured.cardsNeeded > 0 && <span style={{ fontSize: '0.65rem', opacity: 0.8 }}>( {featuredWildsUsed} 🃏 )</span>}
+            </div>
+          </div>
+          {others.length > 0 && (
+            <div className="expand-trigger mini">
+              {isExpanded ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="expand-wrapper" style={{ maxHeight: isExpanded ? '600px' : undefined, overflowY: isExpanded ? 'auto' : undefined }}>
+        <div className="expanded-alternatives mini">
+          {others.map((item, idx) => {
+            const itemFeasible = item.cardsNeeded <= availableWilds;
+            const itemWildsUsed = itemFeasible ? item.cardsNeeded : Math.min(item.cardsNeeded, availableWilds);
+            const itemRemainingNeed = item.cardsNeeded - itemWildsUsed;
+            return (
+              <div key={item.name} className="alt-row mini" style={{ animationDelay: `${Math.min(idx * 0.05, 0.5)}s` }}>
+                <CardImage src={item.icon} cardName={item.name} />
+                <div className="alt-info">
+                  <span className="alt-name">{item.name}</span>
+                  <span className="alt-stat" style={{ color: item.cardsNeeded <= 0 ? '#4ade80' : (itemFeasible ? '#22c55e' : '#94a3b8'), display: 'flex', alignItems: 'center', gap: '0.25rem', flexWrap: 'wrap' }}>
+                    <span>{item.cardsNeeded <= 0 ? 'Fully Ready (✓)' : (itemFeasible ? 'Ready with Wilds (✓)' : `Needs ${itemRemainingNeed} cards`)}</span>
+                    {itemWildsUsed > 0 && item.cardsNeeded > 0 && <span style={{ fontSize: '0.65rem', opacity: 0.8 }}>( {itemWildsUsed} 🃏 )</span>}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Clash Royale Meta Finder - Main Application Entry
 function App() {
@@ -259,6 +314,67 @@ function App() {
     getDisplayLevel,
     getRarityClass
   );
+
+  const generalProgressionData = useMemo(() => {
+    if (!profile) return null;
+    
+    const rarities = ['common', 'rare', 'epic', 'legendary', 'champion'];
+    const recs = rarities.map(r => {
+      let availableWilds = 0;
+      if (r === 'common') availableWilds = Number(magicItems.commonWild) || 0;
+      if (r === 'rare') availableWilds = Number(magicItems.rareWild) || 0;
+      if (r === 'epic') availableWilds = Number(magicItems.epicWild) || 0;
+      if (r === 'legendary') availableWilds = Number(magicItems.legendaryWild) || 0;
+      if (r === 'champion') availableWilds = Number(magicItems.championWild) || 0;
+
+      const list: any[] = [];
+      profile.cards.forEach(userCard => {
+        const rarity = getRarityClass(userCard);
+        if (rarity === r) {
+          const displayLevel = getDisplayLevel(userCard);
+          if (displayLevel < 16) {
+            let totalNeeded = 0;
+            for (let L = displayLevel; L < 16; L++) {
+              totalNeeded += getCardsToNextLevel(rarity, L);
+            }
+            const owned = userCard.count || 0;
+            const cardsNeeded = Math.max(0, totalNeeded - owned);
+            
+            list.push({
+              id: userCard.id,
+              name: userCard.name,
+              icon: getCardIcon(userCard, false, false),
+              cardsNeeded,
+              currentLevel: displayLevel
+            });
+          }
+        }
+      });
+
+      list.sort((a, b) => {
+        const aReady = a.cardsNeeded <= 0;
+        const bReady = b.cardsNeeded <= 0;
+        if (aReady && !bReady) return -1;
+        if (!aReady && bReady) return 1;
+
+        const aFeasible = a.cardsNeeded <= availableWilds;
+        const bFeasible = b.cardsNeeded <= availableWilds;
+        if (aFeasible && !bFeasible) return -1;
+        if (!aFeasible && bFeasible) return 1;
+
+        const aMissing = a.cardsNeeded - (aFeasible ? 0 : availableWilds);
+        const bMissing = b.cardsNeeded - (bFeasible ? 0 : availableWilds);
+        
+        if (aMissing !== bMissing) return aMissing - bMissing;
+        return a.name.localeCompare(b.name);
+      });
+
+      return { rarity: r, list, availableWilds };
+    });
+
+    return recs;
+  }, [profile, magicItems, getDisplayLevel, getRarityClass]);
+
   return (
     <div className="app-container">
       <header className="main-header-centered">
@@ -389,7 +505,7 @@ function App() {
                       </div>
                       {insightsExpanded.rarity && (
                         <div className="stats-tables-grid-3" style={{ marginTop: '1rem' }}>
-                          {metaInsightsData.rarities.map(r => {
+                          {metaInsightsData.rarities.map((r: any) => {
                             const list = Object.values(metaInsightsData.absoluteRarityUsage[r]).filter(item => { const cardId = Object.keys(metaInsightsData.absoluteRarityUsage[r]).find(id => metaInsightsData.absoluteRarityUsage[r][Number(id)].name === item.name); const userCard = profile!.cards.find(c => Number(c.id) === Number(cardId)); return !userCard || getDisplayLevel(userCard) < 16; }).sort((a, b) => b.count - a.count);
                             if (list.length === 0) return null;
                             return (
@@ -400,6 +516,52 @@ function App() {
                       )}
                     </div>
                   </>
+                </div>
+              )}
+
+              {generalProgressionData && (
+                <div className="insights-container" style={{ marginBottom: '2rem' }}>
+                  <div className="insights-header" style={{ justifyContent: 'center' }}>
+                    <Sparkles size={20} color="var(--primary)" />
+                    <h2>GENERAL ACCOUNT PROGRESSION</h2>
+                    <Sparkles size={20} color="var(--primary)" />
+                  </div>
+                  <div style={{ textAlign: 'center', marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                    Based ONLY on your collection and available Magic Items. Does not consider meta decks.
+                  </div>
+                  <div className="upgrade-rec-grid">
+                    {generalProgressionData.map((rec: any) => (
+                      <GeneralUpgradeExpandable 
+                        key={rec.rarity} 
+                        rarity={rec.rarity} 
+                        list={rec.list} 
+                        availableWilds={rec.availableWilds} 
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {generalProgressionData && (
+                <div className="insights-container" style={{ marginBottom: '2rem' }}>
+                  <div className="insights-header" style={{ justifyContent: 'center' }}>
+                    <Sparkles size={20} color="var(--primary)" />
+                    <h2>GENERAL ACCOUNT PROGRESSION</h2>
+                    <Sparkles size={20} color="var(--primary)" />
+                  </div>
+                  <div style={{ textAlign: 'center', marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                    Based ONLY on your collection and available Magic Items. Does not consider meta decks.
+                  </div>
+                  <div className="upgrade-rec-grid">
+                    {generalProgressionData.map(rec => (
+                      <GeneralUpgradeExpandable 
+                        key={rec.rarity} 
+                        rarity={rec.rarity} 
+                        list={rec.list} 
+                        availableWilds={rec.availableWilds} 
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
 
