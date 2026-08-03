@@ -25,6 +25,16 @@ body {
   overflow-x: hidden;
 }
 
+/* Hide scrollbars globally for a sleek, invisible look */
+::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+* {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 .app-container {
   max-width: 1100px;
   margin: 0 auto;
