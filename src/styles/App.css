@@ -73,7 +73,7 @@ button {
   border-radius: 0.5rem;
   cursor: pointer;
   font-weight: bold;
-  transition: all 0.2s;
+  
   display: flex;
   align-items: center;
   justify-content: center;
@@ -108,7 +108,7 @@ button {
   font-weight: 700;
   color: var(--text);
   cursor: pointer;
-  transition: all 0.2s;
+  
 }
 
 .tag-chip:hover {
@@ -201,7 +201,7 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.05);
   flex: 1;
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
-  transition: transform 0.2s;
+  
 }
 
 .stat-main { 
@@ -245,7 +245,7 @@ button {
   background: transparent;
   color: var(--text-muted);
   border: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
   cursor: pointer;
 }
 
@@ -345,7 +345,7 @@ button {
   align-items: center;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
 }
 
 /* RARITY BACKGROUNDS - BASE RARITY ONLY (SOLID & VIBRANT) */
@@ -390,7 +390,7 @@ button {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transition: transform 0.2s;
+  
   z-index: 1;
 }
 
@@ -477,7 +477,7 @@ img[src*="tombstone-hero.png"] {
 .results-summary-bar {
   display: flex;
   margin-bottom: 1rem;
-  animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+  
 }
 
 .total-decks-badge {
@@ -502,7 +502,7 @@ img[src*="tombstone-hero.png"] {
   margin-bottom: 1.5rem;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+  
 }
 
 .deck-header { 
@@ -603,7 +603,7 @@ img[src*="tombstone-hero.png"] {
   align-items: center;
   gap: 0.4rem;
   font-size: 0.7rem;
-  transition: all 0.2s;
+  
   letter-spacing: 0.05em;
 }
 
@@ -919,20 +919,7 @@ img[src*="tombstone-hero.png"] {
   letter-spacing: 0.05em;
 }
 
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-.spin { animation: spin 1s linear infinite; }
 
-/* ANALYSIS PROGRESS UI */
-.analysis-progress-container {
-  background: rgba(43, 115, 255, 0.05);
-  border: 1px solid rgba(43, 115, 255, 0.15);
-  padding: 1.5rem;
-  border-radius: 1.25rem;
-  margin-top: 1.5rem; /* Space from header when filters are closed */
-  margin-bottom: 2rem;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(8px);
-}
 
 .analysis-status {
   display: flex;
@@ -972,7 +959,7 @@ img[src*="tombstone-hero.png"] {
   height: 100%;
   background: linear-gradient(90deg, #2b73ff, #60a5fa, #c026d3);
   border-radius: 1rem;
-  transition: width 0.4s cubic-bezier(0.1, 0.7, 1.0, 0.1);
+  
   position: relative;
   overflow: hidden;
 }
@@ -998,12 +985,10 @@ img[src*="tombstone-hero.png"] {
     rgba(255, 255, 255, 0.2),
     transparent
   );
-  animation: shimmer 1.5s infinite;
+  
 }
 
-@keyframes shimmer {
-  100% { left: 100%; }
-}
+
 
 /* PREMIUM FILTER PREVIEW TRIGGER */
 .filter-preview-trigger {
@@ -1017,7 +1002,7 @@ img[src*="tombstone-hero.png"] {
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  transition: all 0.2s ease-out;
+  
   position: relative;
   overflow: hidden;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
@@ -1085,7 +1070,7 @@ img[src*="tombstone-hero.png"] {
   mask-image: linear-gradient(to right, #000 95%, transparent 100%); /* Fade only at the very end */
   -webkit-mask-image: linear-gradient(to right, #000 95%, transparent 100%);
   filter: grayscale(0.2) brightness(0.8);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  
 }
 
 @media (max-width: 900px) {
@@ -1126,7 +1111,7 @@ img[src*="tombstone-hero.png"] {
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
-  transition: all 0.3s;
+  
 }
 
 .filter-preview-trigger:hover .expand-chevron {
@@ -1153,9 +1138,9 @@ img[src*="tombstone-hero.png"] {
   align-items: center;
   justify-content: center;
   position: relative;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  
   box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+  
 }
 
 .active-filter-icon-wrapper img {
@@ -1164,10 +1149,7 @@ img[src*="tombstone-hero.png"] {
   object-fit: contain;
 }
 
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.5); }
-  to { opacity: 1; transform: scale(1); }
-}
+
 
 /* HERO LANDING PAGE */
 .hero-landing {
@@ -1177,7 +1159,7 @@ img[src*="tombstone-hero.png"] {
   gap: 3rem;
   padding: 4rem 1rem;
   text-align: center;
-  animation: fadeIn 1.2s ease-out;
+  
 }
 
 @media (min-width: 1024px) {
@@ -1226,7 +1208,7 @@ img[src*="tombstone-hero.png"] {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  transition: all 0.2s;
+  
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
@@ -1321,7 +1303,7 @@ img[src*="tombstone-hero.png"] {
   box-shadow: 0 15px 35px -5px rgba(43, 115, 255, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
-  transition: all 0.3s;
+  
 }
 
 .big-analysis-btn-premium:hover {
@@ -1405,17 +1387,14 @@ img[src*="tombstone-hero.png"] {
   justify-content: center;
   font-size: 2.5rem;
   box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-  animation: float 4s ease-in-out infinite;
+  
 }
 
 .c1 { top: 10%; left: 10%; animation-delay: 0s; z-index: 3; }
 .c2 { top: 40%; right: 10%; animation-delay: 1s; z-index: 2; transform: rotate(15deg); }
 .c3 { bottom: 10%; left: 30%; animation-delay: 2s; z-index: 1; transform: rotate(-10deg); }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
-  50% { transform: translateY(-20px) rotate(var(--rot, 0deg)); }
-}
+
 
 .loading-state {
   display: flex;
@@ -1431,7 +1410,7 @@ img[src*="tombstone-hero.png"] {
   max-height: 0;
   opacity: 0;
   overflow: hidden;
-  transition: all 0.2s ease-out;
+  
   transform: translateY(-10px) scale(0.98);
   margin-bottom: 0;
   pointer-events: none;
@@ -1457,7 +1436,7 @@ img[src*="tombstone-hero.png"] {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background 0.2s;
+  
 }
 
 .filter-header:hover {
@@ -1508,7 +1487,7 @@ img[src*="tombstone-hero.png"] {
   background: transparent !important;
   border: none !important;
   cursor: pointer;
-  transition: all 0.2s;
+  
 }
 
 .filter-grid-item:hover {
@@ -1576,7 +1555,7 @@ img[src*="tombstone-hero.png"] {
   border: 2px solid var(--border);
   border-radius: 1rem;
   padding: 0.4rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
   position: relative;
   overflow: hidden;
 }
@@ -1668,7 +1647,7 @@ img[src*="tombstone-hero.png"] {
   background: rgba(15, 23, 42, 0.4);
   border-radius: 1.5rem;
   border: 1px solid var(--border);
-  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  
   position: relative;
 }
 
@@ -1713,7 +1692,7 @@ img[src*="tombstone-hero.png"] {
   height: 100%;
   background: linear-gradient(90deg, var(--primary), #c026d3);
   border-radius: 10px;
-  transition: width 0.3s ease;
+  
 }
 
 .insights-divider {
@@ -1756,7 +1735,7 @@ img[src*="tombstone-hero.png"] {
   gap: 1rem;
   position: relative;
   overflow: hidden;
-  transition: transform 0.2s;
+  
 }
 
 .recommendation-card:hover { transform: translateY(-3px); }
@@ -1829,7 +1808,7 @@ img[src*="tombstone-hero.png"] {
   border-radius: 0.5rem;
   border: 1px solid rgba(255, 255, 255, 0.05);
   opacity: 1;
-  transition: all 0.2s;
+  
   color: var(--text);
 }
 
@@ -1842,7 +1821,7 @@ img[src*="tombstone-hero.png"] {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
   padding-top: 0.5rem;
 }
 
@@ -1924,7 +1903,7 @@ img[src*="tombstone-hero.png"] {
   cursor: pointer;
   height: fit-content;
   min-width: 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
 }
 
 .rec-body, .rec-body-mini {
@@ -1952,7 +1931,7 @@ img[src*="tombstone-hero.png"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  
 }
 
 .expand-trigger.mini {
@@ -1986,7 +1965,7 @@ img[src*="tombstone-hero.png"] {
   padding: 0.4rem 0.6rem;
   background: rgba(255, 255, 255, 0.02);
   border-radius: 0.5rem;
-  transition: background 0.2s;
+  
 }
 
 .alt-row:hover {
@@ -2032,15 +2011,9 @@ img[src*="tombstone-hero.png"] {
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
+
+
 
 .rec-mini-info .name {
   font-size: 0.85rem;
@@ -2088,7 +2061,7 @@ img[src*="tombstone-hero.png"] {
 .expand-wrapper {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  
   overflow: hidden;
 }
 
@@ -2111,7 +2084,7 @@ img[src*="tombstone-hero.png"] {
 .alt-row {
   opacity: 0;
   transform: translateY(20px);
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  
 }
 
 .is-expanded .alt-row {
@@ -2120,13 +2093,13 @@ img[src*="tombstone-hero.png"] {
 }
 
 .expand-trigger {
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  
 }
 .recommendation-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  transition: all 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+  
 }
 
 /* QR Code Modal Styles */
@@ -2139,7 +2112,7 @@ img[src*="tombstone-hero.png"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeIn 0.2s ease-out;
+  
 }
 
 .qr-modal-content {
@@ -2154,7 +2127,7 @@ img[src*="tombstone-hero.png"] {
   align-items: center;
   max-width: 90%;
   width: 400px;
-  animation: slideUp 0.3s ease-out;
+  
 }
 
 .qr-deck-btn {
@@ -2167,7 +2140,7 @@ img[src*="tombstone-hero.png"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  
   margin-left: 0.5rem;
 }
 
@@ -2179,24 +2152,18 @@ img[src*="tombstone-hero.png"] {
 
 /* SKELETON LOADERS */
 .skeleton-container { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.5rem; }
-.skeleton-deck { opacity: 0.7; pointer-events: none; animation: none !important; border-color: rgba(255,255,255,0.05); }
+.skeleton-deck { opacity: 0.7; pointer-events: none;  border-color: rgba(255,255,255,0.05); }
 .skeleton-pulse {
   background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.05) 75%);
   background-size: 200% 100%;
-  animation: pulseShimmer 1.2s infinite linear;
+  
 }
-@keyframes pulseShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-.skeleton-deck .deck-header { height: 70px; background: transparent; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.skeleton-card { aspect-ratio: 150/180; border-radius: 4px; width: 100%; }
-.skeleton-stats { flex: 1; height: 100px; border-radius: 1rem; margin-top: 1rem; }
-@media (min-width: 1024px) {
-  .skeleton-stats { max-width: 250px; height: auto; margin-top: 0; }
-}
+
 
 /* MICRO-INTERACTIONS: DECK CARDS HOVER ONLY */
 .deck-main-content .mini-card { 
   position: relative; 
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+   
   cursor: pointer; 
 }
 
@@ -2214,7 +2181,7 @@ img[src*="tombstone-hero.png"] {
   mask-position: center;
   mask-repeat: no-repeat;
   transform: translateX(-100%);
-  transition: transform 0.6s ease-out;
+  
   pointer-events: none;
   z-index: 5;
   /* Default Silver/White shine for normal cards */
@@ -2238,7 +2205,7 @@ img[src*="tombstone-hero.png"] {
 
 /* Glow effects tracing the exact card outline using drop-shadow on the img */
 .deck-main-content .mini-card img {
-  transition: filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
 }
 
 .deck-main-content .mini-card:hover { transform: translateY(-5px) scale(1.05); z-index: 20; }
@@ -2289,7 +2256,7 @@ img[src*="tombstone-hero.png"] {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding: 1.25rem 1.5rem;
   gap: 1.5rem;
-  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
 }
 
 @media (min-width: 640px) {
@@ -2363,7 +2330,7 @@ img[src*="tombstone-hero.png"] {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding: 1.25rem 1.5rem;
   gap: 1.5rem;
-  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
 }
 
 @media (min-width: 640px) {
@@ -2533,14 +2500,10 @@ img[src*="tombstone-hero.png"] {
 .mini-level.virtual {
   border-color: #fbbf24;
   color: #fbbf24;
-  animation: pulse-virtual 2s infinite;
+  
 }
 
-@keyframes pulse-virtual {
-  0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(251, 191, 36, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
-}
+
 
 /* SORTING CONTROLS */
 .deck-sorting-controls {
@@ -2574,7 +2537,7 @@ img[src*="tombstone-hero.png"] {
   font-weight: 600;
   outline: none;
   cursor: pointer;
-  transition: all 0.2s;
+  
   background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
   background-repeat: no-repeat;
   background-position: right 0.65rem top 50%;
@@ -2601,7 +2564,7 @@ img[src*="tombstone-hero.png"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
   width: 30px;
   height: 30px;
 }

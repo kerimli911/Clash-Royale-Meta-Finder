@@ -273,8 +273,8 @@ function App() {
       setActiveTab('profile');
       setMetaDecksCache(null);
       
-      // AUTO-TRIGGER META ANALYSIS IN BACKGROUND
-      setTimeout(() => performMetaAnalysis(data), 100);
+      setMetaDecksCache(null);
+      // Removed auto-trigger of background meta analysis per user request to optimize performance
 
     } catch (err: any) {
       setError(err.message || 'An error occurred while fetching data.');
