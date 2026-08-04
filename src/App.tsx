@@ -3,7 +3,7 @@ import { Search, LayoutDashboard, UserCircle2, Sparkles, Crown, ArrowDownAZ, Arr
 import { getPlayerProfile, getAllCards } from './services/royaleApi';
 import { CardImage } from './components/CardImage';
 import type { PlayerProfile, Card, MagicItems } from './types/clashRoyale';
-import { isEvoUnlocked, isHeroVariantUnlocked, isAnyHeroUnlocked, getCardIcon, getCardsToNextLevel } from './types/clashRoyale';
+import { isEvoUnlocked, isHeroVariantUnlocked, isAnyHeroUnlocked, getCardIcon, getCardsToNextLevel, registerCardIcons } from './types/clashRoyale';
 import { DeckBuilder } from './components/DeckBuilder';
 import { useMetaInsights } from './hooks/useMetaInsights';
 import { ProfileHeader } from './components/layout/ProfileHeader';
@@ -182,7 +182,12 @@ function App() {
   useEffect(() => {
     const saved = localStorage.getItem('cr_tag_history');
     if (saved) setRecentTags(JSON.parse(saved));
-    getAllCards(INTEGRATED_API_KEY).then(data => setAllGameCards(data.items || []));
+    getAllCards(INTEGRATED_API_KEY).then(data => {
+      const items = data.items || [];
+      setAllGameCards(items);
+      // Register all cards to the global registry so that Evos/Heroes are detected dynamically
+      registerCardIcons(items);
+    });
   }, []);
 
   const normalizeTag = (tag: string) => {
@@ -242,6 +247,9 @@ function App() {
         newMap[c.id] = { id: c.id, rarity: c.rarity, maxLevel: c.maxLevel, elixirCost: c.elixirCost || 0, name: c.name, iconUrls: c.iconUrls };
       });
       setCardMap(newMap);
+      
+      // Ensure we register the icons dynamically upon fetching
+      registerCardIcons(cardsData.items);
 
       const data = await getPlayerProfile(tagToSearch, INTEGRATED_API_KEY);
       

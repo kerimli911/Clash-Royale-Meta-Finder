@@ -26,21 +26,41 @@ export interface Card {
  * For DECK cards, we use metadata. For USER cards, we use levels.
  */
 
-// Global registry to share dynamically discovered icon URLs across the app
-export const globalIconRegistry: Record<number, { medium?: string, evolutionMedium?: string, heroMedium?: string }> = {};
+// Global registry to share dynamically discovered icon URLs and variant availability across the app
+export const globalIconRegistry: Record<number, { 
+  medium?: string; 
+  evolutionMedium?: string; 
+  heroMedium?: string;
+  hasEvo?: boolean;
+  hasHero?: boolean;
+}> = {};
 
 export const registerCardIcons = (cards: Card[]) => {
   if (!cards || !Array.isArray(cards)) return;
   cards.forEach(c => {
     if (c && c.id && c.iconUrls) {
       if (!globalIconRegistry[c.id]) globalIconRegistry[c.id] = {};
-      if (c.iconUrls.medium) globalIconRegistry[c.id].medium = c.iconUrls.medium;
-      if (c.iconUrls.evolutionMedium) globalIconRegistry[c.id].evolutionMedium = c.iconUrls.evolutionMedium;
-      if (c.iconUrls.heroMedium) globalIconRegistry[c.id].heroMedium = c.iconUrls.heroMedium;
+      
+      const registryEntry = globalIconRegistry[c.id];
+      
+      if (c.iconUrls.medium) registryEntry.medium = c.iconUrls.medium;
+      if (c.iconUrls.evolutionMedium) {
+        registryEntry.evolutionMedium = c.iconUrls.evolutionMedium;
+        registryEntry.hasEvo = true;
+      }
+      if (c.iconUrls.heroMedium) {
+        registryEntry.heroMedium = c.iconUrls.heroMedium;
+        registryEntry.hasHero = true;
+      }
+
+      // Also heuristically flag if the card name contains 'evolved' or 'hero' just in case
+      // the official API didn't provide the URL but the metadata hints at it.
+      const nameLower = (c.name || '').toLowerCase();
+      if (nameLower.includes('evolved') || nameLower.includes('evolution')) registryEntry.hasEvo = true;
+      if (nameLower.includes('hero')) registryEntry.hasHero = true;
     }
   });
 };
-
 
 
 export const isChampion = (card: Card) => {
@@ -102,44 +122,32 @@ export const isAnyHeroUnlocked = (card: Card) => {
 // Check if the card definition has an Evolution version available (Static check)
 export const hasEvoAvailable = (card: Card) => {
   if (!card) return false;
-  const name = (card.name || '').toLowerCase();
-  const slug = getCardSlug(card.name);
-  const rarity = (card.rarity || '').toLowerCase();
+  
+  // 1. Explicit payload check on the specific instance
+  if (card.iconUrls?.evolutionMedium || (card.name || '').toLowerCase().includes('evolved')) return true;
 
-  // 1. Explicit payload check
-  if (card.iconUrls?.evolutionMedium || name.includes('evolved')) return true;
+  // 2. Check the global registry populated dynamically from Royale API's full card list
+  if (globalIconRegistry[card.id]?.hasEvo) return true;
 
-  // 2. Strict allowed list for Evolutions (Exclude Heroes and Champions)
-  const evoWhitelist = [
-    'princess', 'drill', 'wizard', 'zap', 'tesla', 'wall-breakers', 
-    'bomber', 'valkyrie', 'ice-spirit', 'royal-recruits', 'barbs', 'knight', 
-    'archer', 'mortar', 'skeleton', 'firecracker', 'rg', 'bats', 
-    'battle-ram'
-  ];
-
-  // 3. Exclude high rarities that aren't evos
-  if (rarity === 'champion' || rarity === 'hero') return false;
-
-  return evoWhitelist.includes(slug);
+  return false;
 };
 
 // Check if the card definition has a Hero version available (Static check)
 export const hasHeroAvailable = (card: Card) => {
   if (!card) return false;
   const name = (card.name || '').toLowerCase();
-  const slug = getCardSlug(card.name);
   const rarity = (card.rarity || '').toLowerCase();
 
-  // 1. Explicit payload check
-  if (card.iconUrls?.heroMedium || name.includes('hero') || rarity === 'hero') return true;
-
-  // 2. Strict allowed list for Heroes (Currently Tombstone and Wizard variants)
-  const heroWhitelist = ['tombstone', 'wizard'];
-
-  // 3. Champions are NOT Heroes in this context (they have their own section)
+  // Champions are NOT Heroes in this context (they have their own section)
   if (rarity === 'champion') return false;
 
-  return heroWhitelist.includes(slug);
+  // 1. Explicit payload check on the specific instance
+  if (card.iconUrls?.heroMedium || name.includes('hero') || rarity === 'hero') return true;
+
+  // 2. Check the global registry populated dynamically from Royale API's full card list
+  if (globalIconRegistry[card.id]?.hasHero) return true;
+
+  return false;
 };
 
 // Aliases for backward compatibility
@@ -396,17 +404,7 @@ export const getCardIcon = (card: Card, isHero: boolean, isEvo: boolean) => {
   
   const slug = getCardSlug(card.name);
 
-  // SPECIAL OVERRIDES for new cards missing from main CDN static path
-  // Handle Princess Evolution (Clean CDN version)
-  if (slug === 'princess' && isEvo) {
-    return 'https://cdn.royaleapi.com/static/img/cards-150/princess-ev1.png';
-  }
-  // Handle Tombstone Evolution/Hero (Standard variant)
-  if (slug === 'tombstone' && (isHero || isEvo)) {
-    return 'https://cdn.royaleapi.com/static/img/cards-150/tombstone-hero.png';
-  }
-
-  // 1. Check for explicit variant URLs in payload or registry
+  // 1. Check for explicit variant URLs in payload or dynamic global registry
   const registryIcons = globalIconRegistry[card.id] || {};
   const heroUrl = card.iconUrls?.heroMedium || registryIcons.heroMedium;
   const evoUrl = card.iconUrls?.evolutionMedium || registryIcons.evolutionMedium;
@@ -419,7 +417,7 @@ export const getCardIcon = (card: Card, isHero: boolean, isEvo: boolean) => {
   if (isHero && mediumIcon.toLowerCase().includes('hero')) return mediumIcon;
   if (isEvo && (mediumIcon.toLowerCase().includes('evo') || mediumIcon.toLowerCase().includes('ev1') || mediumIcon.toLowerCase().includes('evolution'))) return mediumIcon;
   
-  // 3. Fallback to stable RoyaleAPI CDN
+  // 3. Fallback to standard RoyaleAPI CDN patterns dynamically
   const BASE_CDN = "https://cdn.royaleapi.com/static/img/cards-150";
   
   if (isHero) return `${BASE_CDN}/${slug}-hero.png`;
