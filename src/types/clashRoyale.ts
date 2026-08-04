@@ -37,10 +37,11 @@ export const globalIconRegistry: Record<number, {
 
 export const registerCardIcons = (cards: Card[]) => {
   if (!cards || !Array.isArray(cards)) return;
+  
+  // First pass: explicit payload fields
   cards.forEach(c => {
     if (c && c.id && c.iconUrls) {
       if (!globalIconRegistry[c.id]) globalIconRegistry[c.id] = {};
-      
       const registryEntry = globalIconRegistry[c.id];
       
       if (c.iconUrls.medium) registryEntry.medium = c.iconUrls.medium;
@@ -53,11 +54,43 @@ export const registerCardIcons = (cards: Card[]) => {
         registryEntry.hasHero = true;
       }
 
-      // Also heuristically flag if the card name contains 'evolved' or 'hero' just in case
-      // the official API didn't provide the URL but the metadata hints at it.
       const nameLower = (c.name || '').toLowerCase();
-      if (nameLower.includes('evolved') || nameLower.includes('evolution')) registryEntry.hasEvo = true;
+      if (nameLower.includes('evolved') || nameLower.includes('evolution') || nameLower.includes(' evo')) registryEntry.hasEvo = true;
       if (nameLower.includes('hero')) registryEntry.hasHero = true;
+    }
+  });
+
+  // Second pass: Cross reference standalone variant cards with their base cards to generalize any new variants RoyaleAPI adds
+  cards.forEach(c => {
+    const nameLower = (c.name || '').toLowerCase();
+    
+    let baseName = '';
+    let variantType = '';
+    
+    if (nameLower.includes('hero')) {
+      baseName = nameLower.replace('hero', '').trim();
+      variantType = 'hero';
+    } else if (nameLower.includes('evo') || nameLower.includes('evolved') || nameLower.includes('evolution')) {
+      baseName = nameLower.replace('evolved', '').replace('evo', '').replace('evolution', '').trim();
+      variantType = 'evo';
+    }
+    
+    if (baseName && variantType) {
+      const baseCard = cards.find(bc => {
+        const bcNameLower = (bc.name || '').toLowerCase();
+        return bcNameLower === baseName || bcNameLower === baseName.replace(/-/g, ' ');
+      });
+      
+      if (baseCard && baseCard.id !== c.id) {
+        if (!globalIconRegistry[baseCard.id]) globalIconRegistry[baseCard.id] = {};
+        if (variantType === 'hero') {
+          globalIconRegistry[baseCard.id].hasHero = true;
+          globalIconRegistry[baseCard.id].heroMedium = c.iconUrls?.medium || globalIconRegistry[baseCard.id].heroMedium;
+        } else if (variantType === 'evo') {
+          globalIconRegistry[baseCard.id].hasEvo = true;
+          globalIconRegistry[baseCard.id].evolutionMedium = c.iconUrls?.medium || globalIconRegistry[baseCard.id].evolutionMedium;
+        }
+      }
     }
   });
 };
@@ -414,8 +447,10 @@ export const getCardIcon = (card: Card, isHero: boolean, isEvo: boolean) => {
   
   // 2. Check if the standard medium icon already matches the requested form
   const mediumIcon = card.iconUrls?.medium || registryIcons.medium || '';
-  if (isHero && mediumIcon.toLowerCase().includes('hero')) return mediumIcon;
-  if (isEvo && (mediumIcon.toLowerCase().includes('evo') || mediumIcon.toLowerCase().includes('ev1') || mediumIcon.toLowerCase().includes('evolution'))) return mediumIcon;
+  const nameLower = (card.name || '').toLowerCase();
+  
+  if (isHero && (nameLower.includes('hero') || mediumIcon.toLowerCase().includes('hero'))) return mediumIcon;
+  if (isEvo && (nameLower.includes('evo') || nameLower.includes('evolution') || mediumIcon.toLowerCase().includes('evo') || mediumIcon.toLowerCase().includes('ev1'))) return mediumIcon;
   
   // 3. Fallback to standard RoyaleAPI CDN patterns dynamically
   const BASE_CDN = "https://cdn.royaleapi.com/static/img/cards-150";

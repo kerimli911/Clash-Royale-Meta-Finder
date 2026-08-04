@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { CardImage } from './CardImage';
 import type { MetaDeck } from '../App';
 import type { PlayerProfile, Card } from '../types/clashRoyale';
-import { hasEvoAvailable, hasHeroAvailable, getCardIcon, getSubstitutions } from '../types/clashRoyale';
+import { hasEvoAvailable, hasHeroAvailable, getCardIcon, getSubstitutions, isEvoUnlocked, isHeroVariantUnlocked } from '../types/clashRoyale';
 import { TrendingUp, RefreshCw, Trophy, Filter, X, Sparkles, Crown, Copy, LayoutDashboard, Gem, Swords, ArrowUp, ArrowDown } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { DeckCard } from './ui/DeckCard';
@@ -202,9 +202,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
         const includes = selectedFilters.filter(f => f.mode === 'include');
         const hasAllIncludes = includes.every(filter => {
           if (filter.isEvoFilter) {
-            return deck.cards.some(c => Number(c.id) === filter.id && (c as any)._forceForm === 'evo');
+            return deck.cards.some(c => Number(c.id) === filter.id && isEvoUnlocked(c));
           } else if (filter.rarity === 'hero') {
-            return deck.cards.some(c => Number(c.id) === filter.id && (c as any)._forceForm === 'hero');
+            return deck.cards.some(c => Number(c.id) === filter.id && isHeroVariantUnlocked(c));
           } else {
             return deck.cards.some(c => Number(c.id) === filter.id);
           }
@@ -215,9 +215,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
         const excludes = selectedFilters.filter(f => f.mode === 'exclude');
         const hasAnyExclude = excludes.some(filter => {
           if (filter.isEvoFilter) {
-            return deck.cards.some(c => Number(c.id) === filter.id && (c as any)._forceForm === 'evo');
+            return deck.cards.some(c => Number(c.id) === filter.id && isEvoUnlocked(c));
           } else if (filter.rarity === 'hero') {
-            return deck.cards.some(c => Number(c.id) === filter.id && (c as any)._forceForm === 'hero');
+            return deck.cards.some(c => Number(c.id) === filter.id && isHeroVariantUnlocked(c));
           } else {
             return deck.cards.some(c => Number(c.id) === filter.id);
           }
