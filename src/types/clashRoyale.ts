@@ -449,8 +449,12 @@ export const getCardIcon = (card: Card, isHero: boolean, isEvo: boolean) => {
   const mediumIcon = card.iconUrls?.medium || registryIcons.medium || '';
   const nameLower = (card.name || '').toLowerCase();
   
-  if (isHero && (nameLower.includes('hero') || mediumIcon.toLowerCase().includes('hero'))) return mediumIcon;
-  if (isEvo && (nameLower.includes('evo') || nameLower.includes('evolution') || mediumIcon.toLowerCase().includes('evo') || mediumIcon.toLowerCase().includes('ev1'))) return mediumIcon;
+  // If the card is NATIVELY the variant we are requesting, its medium icon is exactly what we want.
+  if (isHero && (nameLower.includes('hero') || card.rarity?.toLowerCase() === 'hero')) return mediumIcon;
+  if (isEvo && (nameLower.includes('evo') || nameLower.includes('evolution') || card.rarity?.toLowerCase() === 'evolution')) return mediumIcon;
+
+  if (isHero && mediumIcon.toLowerCase().includes('hero')) return mediumIcon;
+  if (isEvo && (mediumIcon.toLowerCase().includes('evo') || mediumIcon.toLowerCase().includes('ev1'))) return mediumIcon;
   
   // 3. Fallback to standard RoyaleAPI CDN patterns dynamically
   const BASE_CDN = "https://cdn.royaleapi.com/static/img/cards-150";

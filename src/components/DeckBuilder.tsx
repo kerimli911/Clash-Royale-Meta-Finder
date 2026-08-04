@@ -201,12 +201,22 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       .filter(deck => {
         const includes = selectedFilters.filter(f => f.mode === 'include');
         const hasAllIncludes = includes.every(filter => {
+          const matchesCard = (c: Card, filterItem: any) => {
+            if (Number(c.id) === filterItem.id) return true;
+            // Cross-reference fallback for separate variant cards
+            const cName = (c.name || '').toLowerCase();
+            const fName = (filterItem.name || '').toLowerCase().replace(' (hero)', '');
+            if (filterItem.rarity === 'hero' && (cName === `hero ${fName}` || cName === `${fName} hero`)) return true;
+            if (filterItem.isEvoFilter && (cName === `evo ${fName}` || cName === `evolved ${fName}` || cName === `${fName} evo` || cName === `${fName} evolution`)) return true;
+            return false;
+          };
+
           if (filter.isEvoFilter) {
-            return deck.cards.some(c => Number(c.id) === filter.id && isEvoUnlocked(c));
+            return deck.cards.some(c => matchesCard(c, filter) && isEvoUnlocked(c));
           } else if (filter.rarity === 'hero') {
-            return deck.cards.some(c => Number(c.id) === filter.id && isHeroVariantUnlocked(c));
+            return deck.cards.some(c => matchesCard(c, filter) && isHeroVariantUnlocked(c));
           } else {
-            return deck.cards.some(c => Number(c.id) === filter.id);
+            return deck.cards.some(c => matchesCard(c, filter));
           }
         });
 
@@ -214,12 +224,21 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 
         const excludes = selectedFilters.filter(f => f.mode === 'exclude');
         const hasAnyExclude = excludes.some(filter => {
+          const matchesCard = (c: Card, filterItem: any) => {
+            if (Number(c.id) === filterItem.id) return true;
+            const cName = (c.name || '').toLowerCase();
+            const fName = (filterItem.name || '').toLowerCase().replace(' (hero)', '');
+            if (filterItem.rarity === 'hero' && (cName === `hero ${fName}` || cName === `${fName} hero`)) return true;
+            if (filterItem.isEvoFilter && (cName === `evo ${fName}` || cName === `evolved ${fName}` || cName === `${fName} evo` || cName === `${fName} evolution`)) return true;
+            return false;
+          };
+
           if (filter.isEvoFilter) {
-            return deck.cards.some(c => Number(c.id) === filter.id && isEvoUnlocked(c));
+            return deck.cards.some(c => matchesCard(c, filter) && isEvoUnlocked(c));
           } else if (filter.rarity === 'hero') {
-            return deck.cards.some(c => Number(c.id) === filter.id && isHeroVariantUnlocked(c));
+            return deck.cards.some(c => matchesCard(c, filter) && isHeroVariantUnlocked(c));
           } else {
-            return deck.cards.some(c => Number(c.id) === filter.id);
+            return deck.cards.some(c => matchesCard(c, filter));
           }
         });
 
