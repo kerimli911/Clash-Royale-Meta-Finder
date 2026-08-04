@@ -430,6 +430,24 @@ export const useMetaInsights = (
     const missingHeroImpact: Record<number, { name: string, icon: string, impact: number, count: number }> = {};
     const upgradeRarityImpact: Record<number, { name: string, icon: string, impact: number, count: number, rarity: string, id: number, cardsNeeded: number, currentLevel: number }> = {};
 
+    // Initialize with all non-maxed user cards so even non-meta cards appear in the upgrade list (at the bottom)
+    profile.cards.forEach(userCard => {
+      const displayLevel = getDisplayLevel(userCard);
+      if (displayLevel > 0 && displayLevel < 16) {
+        const r = getRarityClass(userCard);
+        let totalNeeded = 0;
+        for (let L = displayLevel; L < 16; L++) {
+          totalNeeded += getCardsToNextLevel(r, L);
+        }
+        const owned = userCard.count || 0;
+        const cardsNeeded = Math.max(0, totalNeeded - owned);
+        upgradeRarityImpact[userCard.id] = {
+          id: userCard.id, name: userCard.name, icon: userCard.iconUrls?.medium || getCardIcon(userCard, false, false),
+          impact: 0, count: 0, rarity: r, cardsNeeded, currentLevel: displayLevel
+        };
+      }
+    });
+
     allMetaDecks.forEach(deck => {
       const weight = Math.pow(deck.score / 10, 3);
       deck.cards.forEach((metaCard: any) => {
