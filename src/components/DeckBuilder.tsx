@@ -3,7 +3,7 @@ import { CardImage } from './CardImage';
 import type { MetaDeck } from '../App';
 import type { PlayerProfile, Card } from '../types/clashRoyale';
 import { hasEvoAvailable, hasHeroAvailable, getCardIcon, getSubstitutions } from '../types/clashRoyale';
-import { TrendingUp, RefreshCw, Trophy, Filter, X, Sparkles, Crown, Activity, Copy, LayoutDashboard, Gem, Swords, ArrowUp, ArrowDown } from 'lucide-react';
+import { TrendingUp, RefreshCw, Trophy, Filter, X, Sparkles, Crown, Copy, LayoutDashboard, Gem, Swords, ArrowUp, ArrowDown } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { DeckCard } from './ui/DeckCard';
 import { useWarDecks } from '../hooks/useWarDecks';
@@ -610,17 +610,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
         </div>
       )}
       
-      {selectedFilters.length === 0 && !showWarDecks && !cachedDecks && !isLoading && (
-        <div className="empty-state">
-          <div className="empty-icon"><Activity size={48} /></div>
-          <h3>Select Cards to Find Decks</h3>
-          <p>Tap cards in the filter above to discover the perfect meta deck for your collection.</p>
-          <button className="action-btn" onClick={() => setIsFilterExpanded(true)} style={{ marginTop: '1rem', background: 'var(--primary)' }}>
-            <Filter size={16} />
-            <span>FIND META DECKS</span>
-          </button>
-        </div>
-      )}
+
       
       {isLoading && !cachedDecks && (
         <div className="skeleton-container">
