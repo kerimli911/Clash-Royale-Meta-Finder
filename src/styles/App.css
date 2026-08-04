@@ -2168,40 +2168,15 @@ img[src*="tombstone-hero.png"] {
 }
 
 /* The sweeping reflection overlay clipped perfectly to the card PNG */
-.deck-main-content .mini-card::after {
-  content: '';
-  position: absolute; 
-  top: 0; left: 0; width: 100%; height: 100%;
-  -webkit-mask-image: var(--card-img);
-  -webkit-mask-size: cover;
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  mask-image: var(--card-img);
-  mask-size: cover;
-  mask-position: center;
-  mask-repeat: no-repeat;
-  transform: translateX(-100%);
-  
-  pointer-events: none;
-  z-index: 5;
-  /* Default Silver/White shine for normal cards */
-  background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.2) 40%, rgba(255, 255, 255, 0.6) 50%, rgba(255, 255, 255, 0.2) 60%, transparent 80%);
-}
+
 
 /* Gold shine for Champions and Heroes */
-.deck-main-content .mini-card.champion-slot::after, 
-.deck-main-content .mini-card.hero-slot::after {
-  background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.5) 40%, rgba(255, 206, 49, 0.9) 50%, rgba(255, 255, 255, 0.5) 60%, transparent 80%);
-}
+
 
 /* Purple/Silver shine for Evos */
-.deck-main-content .mini-card.evo-slot::after {
-  background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.3) 40%, rgba(168, 85, 247, 0.8) 50%, rgba(255, 255, 255, 0.3) 60%, transparent 80%);
-}
 
-.deck-main-content .mini-card:hover::after { 
-  transform: translateX(100%); 
-}
+
+
 
 /* Glow effects tracing the exact card outline using drop-shadow on the img */
 .deck-main-content .mini-card img {
@@ -2449,12 +2424,8 @@ img[src*="tombstone-hero.png"] {
 
 
 /* Ensure the sweeping reflection on legendary cards perfectly matches their scaled sizes */
-.deck-main-content .card-legendary::after {
-  mask-size: 90% !important;
-}
-.deck-main-content .card-ronin::after {
-  mask-size: 100% !important;
-}
+
+
 
 .card-badges-container {
   position: absolute;
