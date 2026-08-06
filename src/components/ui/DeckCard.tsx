@@ -19,7 +19,7 @@ interface DeckCardProps {
   
 }
 
-export const DeckCard: React.FC<DeckCardProps> = ({
+const DeckCardComponent: React.FC<DeckCardProps> = ({
   deck,
   idx,
   profile,
@@ -394,3 +394,20 @@ export const DeckCard: React.FC<DeckCardProps> = ({
             );
           
 };
+
+export const DeckCard = React.memo(DeckCardComponent, (previous, next) => {
+  const wasScoreExpanded = previous.expandedScoreIdx === previous.idx;
+  const isScoreExpanded = next.expandedScoreIdx === next.idx;
+  const wasCopied = previous.copiedIndex === previous.idx;
+  const isCopied = next.copiedIndex === next.idx;
+
+  return previous.deck === next.deck
+    && previous.profile === next.profile
+    && previous.idx === next.idx
+    && wasScoreExpanded === isScoreExpanded
+    && wasCopied === isCopied
+    && previous.getDisplayLevel === next.getDisplayLevel
+    && previous.getCardSubstitutesData === next.getCardSubstitutesData
+    && previous.handleCopyDeck === next.handleCopyDeck
+    && previous.handleShowQr === next.handleShowQr;
+});

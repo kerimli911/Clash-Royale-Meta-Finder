@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Search, LayoutDashboard, UserCircle2, Sparkles, Crown, ArrowDownAZ, ArrowUpAZ, Clock, RefreshCw, X as CloseIcon, TrendingUp, ArrowUp, ArrowDown } from 'lucide-react';
 import { getPlayerProfile, getAllCards } from './services/royaleApi';
 import { CardImage } from './components/CardImage';
@@ -91,7 +91,7 @@ const GeneralUpgradeExpandable = ({ rarity, list, availableWilds }: { rarity: st
           )}
         </div>
       </div>
-      <div className="expand-wrapper" style={{ maxHeight: isExpanded ? '600px' : undefined, overflowY: isExpanded ? 'auto' : undefined }}>
+      <div className="expand-wrapper">
         <div className="expanded-alternatives mini">
           {others.map((item, idx) => {
             const itemFeasible = item.cardsNeeded <= availableWilds;
@@ -118,6 +118,7 @@ const GeneralUpgradeExpandable = ({ rarity, list, availableWilds }: { rarity: st
 
 // Clash Royale Meta Finder - Main Application Entry
 function App() {
+  const spotlightRef = useRef<HTMLDivElement>(null);
   const [playerTag, setPlayerTag] = useState('');
   const [recentTags, setRecentTags] = useState<string[]>([]);
   const [profile, setProfile] = useState<PlayerProfile | null>(null);
@@ -144,6 +145,43 @@ function App() {
     specificEvoShards: {},
     gems: 0
   });
+
+  useEffect(() => {
+    let animationFrame: number | null = null;
+    let pointerX = 0;
+    let pointerY = 0;
+
+    const paintSpotlight = () => {
+      const spotlight = spotlightRef.current;
+      if (spotlight) {
+        spotlight.style.transform = `translate3d(${pointerX}px, ${pointerY}px, 0) translate(-50%, -50%)`;
+        spotlight.style.opacity = '1';
+      }
+      animationFrame = null;
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (event.pointerType && event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
+      pointerX = event.clientX;
+      pointerY = event.clientY;
+      if (animationFrame === null) animationFrame = window.requestAnimationFrame(paintSpotlight);
+    };
+
+    const hideSpotlight = () => {
+      if (spotlightRef.current) spotlightRef.current.style.opacity = '0';
+    };
+
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    document.addEventListener('pointerleave', hideSpotlight);
+    window.addEventListener('blur', hideSpotlight);
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('pointerleave', hideSpotlight);
+      window.removeEventListener('blur', hideSpotlight);
+      if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
+    };
+  }, []);
 
   const getBaseLevel = (rarity: string) => {
     switch (rarity.toLowerCase()) {
@@ -384,6 +422,8 @@ function App() {
   }, [profile, magicItems, getDisplayLevel, getRarityClass]);
 
   return (
+    <>
+    <div ref={spotlightRef} className="cursor-spotlight" aria-hidden="true" />
     <div className="app-container">
       <header className="main-header-centered">
         <div className="brand-kicker"><Crown size={15} /><span>ROYAL STRATEGY LAB</span></div>
@@ -622,6 +662,7 @@ function App() {
         </div>
       )}
     </div>
+    </>
   );
 }
 

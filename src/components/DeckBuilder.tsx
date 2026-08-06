@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { CardImage } from './CardImage';
 import type { MetaDeck } from '../App';
 import type { PlayerProfile, Card } from '../types/clashRoyale';
@@ -53,7 +53,8 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [qrModalUrl, setQrModalUrl] = useState<string | null>(null);
   const [expandedScoreIdx, setExpandedScoreIdx] = useState<number | null>(null);
-  const [visibleCount, setVisibleCount] = useState(20);
+  const deckPageSize = useMemo(() => window.matchMedia('(max-width: 760px)').matches ? 6 : 10, []);
+  const [visibleCount, setVisibleCount] = useState(deckPageSize);
   const [sortCriterion, setSortCriterion] = useState<string>('winRate');
   const [sortDirection, setSortDirection] = useState<'desc' | 'asc'>('desc');
 
@@ -85,11 +86,11 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 
   // Reset pagination when filters change
   useEffect(() => {
-    setVisibleCount(20);
-  }, [selectedFilters]);
+    setVisibleCount(deckPageSize);
+  }, [selectedFilters, deckPageSize]);
 
   const handleLoadMore = () => {
-    setVisibleCount(prev => prev + 20);
+    setVisibleCount(prev => prev + deckPageSize);
   };
 
   const toggleFilter = (item: FilterItem, action: 'cycle' | 'include' | 'exclude' | 'remove' = 'cycle') => {
@@ -136,7 +137,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     });
   };
 
-  const generateDeckLink = (deck: MetaDeck): string => {
+  const generateDeckLink = useCallback((deck: MetaDeck): string => {
     const { cards, towerTroopId } = deck;
     const deckCards = cards.filter(c => c && c.id && c.id < 68000000).slice(0, 8);
     const deckIds = deckCards.map(c => c.id).join(';');
@@ -155,9 +156,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 
     const deepLinkParams = `deck=${deckIds}&l=MetaArchetype&tt=${towerId}`;
     return `https://link.clashroyale.com/en/?clashroyale://copyDeck?${deepLinkParams}`;
-  };
+  }, []);
 
-  const handleCopyDeck = (deck: MetaDeck, index: number) => {
+  const handleCopyDeck = useCallback((deck: MetaDeck, index: number) => {
     const finalLink = generateDeckLink(deck);
 
     navigator.clipboard.writeText(finalLink).then(() => {
@@ -166,13 +167,13 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     });
 
     window.open(finalLink, '_self');
-  };
+  }, [generateDeckLink]);
 
-  const handleShowQr = (deck: MetaDeck) => {
+  const handleShowQr = useCallback((deck: MetaDeck) => {
     setQrModalUrl(generateDeckLink(deck));
-  };
+  }, [generateDeckLink]);
 
-  const getCardSubstitutesData = (cardName: string) => {
+  const getCardSubstitutesData = useCallback((cardName: string) => {
     const slug = cardName.toLowerCase().replace(/ /g, '-').replace(/\./g, '');
     const subs = getSubstitutions(slug);
     if (subs.length === 0) return null;
@@ -192,7 +193,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     }
     
     return null;
-  };
+  }, [profile.cards, allGameCards]);
 
   const { filteredRecommendations } = useMemo(() => {
     if (!cachedDecks || cachedDecks.length === 0) return { cardFilteredDecks: [], filteredRecommendations: [] };
