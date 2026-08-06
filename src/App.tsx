@@ -386,7 +386,8 @@ function App() {
   return (
     <div className="app-container">
       <header className="main-header-centered">
-        <h1>Clash Royale Meta Finder</h1>
+        <div className="brand-kicker"><Crown size={15} /><span>ROYAL STRATEGY LAB</span></div>
+        <h1>Clash Royale <span>Meta Finder</span></h1>
         <p>Analyze your collection and find the best pro decks for your levels</p>
       </header>
 
@@ -415,7 +416,7 @@ function App() {
             </div>
           </div>
         )}
-        {error && <p style={{ color: '#ff4d4d', fontSize: '0.9rem', marginTop: '0.5rem' }}>{error}</p>}
+        {error && <p className="search-error">{error}</p>}
       </div>
 
       {loading && <div className="loading-state"><RefreshCw size={48} className="spin" color="var(--primary)" /><p>Fetching Royale Data...</p></div>}
@@ -628,4 +629,4 @@ export default App;
 
 
 
-
+
